@@ -1,0 +1,37 @@
+name: iOS build
+
+# Solo manual: los minutos de macOS cuentan x10 en repositorios privados.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.7
+          channel: stable
+          cache: true
+      - name: env.json desde los secretos
+        working-directory: app
+        run: |
+          printf '{"SUPABASE_URL":"%s","SUPABASE_ANON_KEY":"%s"}' \
+            "${{ secrets.SUPABASE_URL }}" "${{ secrets.SUPABASE_ANON_KEY }}" > env.json
+      - name: Compilar (sin firmar)
+        working-directory: app
+        run: |
+          flutter pub get
+          flutter build ios --release --no-codesign --dart-define-from-file=env.json
+          mkdir -p Payload && cp -r build/ios/iphoneos/Runner.app Payload/
+          zip -qr Tinerfuel.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Tinerfuel-ipa
+          path: app/Tinerfuel.ipa
+          retention-days: 7

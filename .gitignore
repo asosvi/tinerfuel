@@ -1,0 +1,24 @@
+# Datos descargados (se regeneran con tool/probe_sources.py y los importadores)
+# (solo la carpeta de la raíz: app/lib/data/ es código)
+/data/
+
+# Secretos
+env.json
+.env
+*.env
+supabase/.env
+supabase/functions/.env
+**/key.properties
+*.jks
+*.keystore
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Node
+node_modules/
+
+# Claude Code (local)
+.claude/settings.local.json

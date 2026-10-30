@@ -1,0 +1,36 @@
+name: Importar gasolineras (MITECO)
+
+# El MITECO solo acepta un cifrado TLS que las Edge Functions de Supabase no
+# admiten (ver CLAUDE.md), así que se descarga desde aquí. Cada 30 min; GitHub puede retrasar las ejecuciones
+# programadas unos minutos. Sin reintentos: si falla, la siguiente lo vuelve a intentar.
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: import-fuel
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Importar
+        if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
+        run: python -I importer/miteco.py
+      # Sin secretos, una ejecución manual solo prueba que la descarga funciona.
+      - name: Probar la descarga (sin secretos)
+        if: (env.SUPABASE_URL == '' || env.SUPABASE_SERVICE_ROLE_KEY == '') && github.event_name == 'workflow_dispatch'
+        run: python -I importer/miteco.py --dry-run
+      - name: Sin secretos
+        if: (env.SUPABASE_URL == '' || env.SUPABASE_SERVICE_ROLE_KEY == '') && github.event_name != 'workflow_dispatch'
+        run: echo "Faltan los secretos SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY. No se importa nada."
