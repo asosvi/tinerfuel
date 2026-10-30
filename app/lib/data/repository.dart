@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../config.dart';
 import 'models.dart';
 
 /// Errores que la interfaz sabe explicar.
@@ -20,6 +21,16 @@ class AppException implements Exception {
 }
 
 const photoBucket = 'parking-photos';
+
+/// Recorta la parte visible del mapa a la zona con datos; null si no la toca.
+LatLngBounds? clampToSpain(LatLngBounds b) {
+  final south = max(b.south, spainSouthWest.latitude);
+  final north = min(b.north, spainNorthEast.latitude);
+  final west = max(b.west, spainSouthWest.longitude);
+  final east = min(b.east, spainNorthEast.longitude);
+  if (south >= north || west >= east) return null;
+  return LatLngBounds(LatLng(south, west), LatLng(north, east));
+}
 
 /// Única puerta a Supabase: la interfaz no llama a `Supabase.instance` directamente.
 class Repository {
@@ -38,14 +49,16 @@ class Repository {
     required String fuel,
     required double minKw,
   }) async {
+    final box = clampToSpain(bounds);
+    if (box == null) return const [];
     final rows = await db.rpc(
       'map_points',
       params: {
         'kind': layer.rpcKind,
-        'min_lon': bounds.west,
-        'min_lat': bounds.south,
-        'max_lon': bounds.east,
-        'max_lat': bounds.north,
+        'min_lon': box.west,
+        'min_lat': box.south,
+        'max_lon': box.east,
+        'max_lat': box.north,
         'zoom': zoom,
         'fuel': fuel,
         'min_kw': minKw,

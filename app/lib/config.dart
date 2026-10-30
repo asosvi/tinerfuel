@@ -26,3 +26,9 @@ const tileUserAgent = 'com.example.tinerfuel';
 /// Vista inicial: toda España con Canarias (sin ubicación).
 const spainCenter = LatLng(35.8, -7.8);
 const spainZoom = 4.9;
+
+/// Zona con datos (península, Baleares, Canarias, Ceuta y Melilla). La caja
+/// que se pide a map_points se recorta a esta zona: la base de datos rechaza
+/// cajas de más de 40° × 30° (pantallas grandes con poco zoom).
+const spainSouthWest = LatLng(27.4, -18.4);
+const spainNorthEast = LatLng(44.0, 4.6);

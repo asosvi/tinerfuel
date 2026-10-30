@@ -12,8 +12,26 @@ import 'package:tinerfuel/l10n/app_localizations_en.dart';
 import 'package:tinerfuel/l10n/app_localizations_es.dart';
 import 'package:tinerfuel/ui/format.dart';
 import 'package:tinerfuel/ui/theme.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 void main() {
+  group('mapa', () {
+    test('la caja se recorta a España (la base de datos rechaza cajas enormes)', () {
+      // vista inicial en una pantalla grande: medio Atlántico y media Europa
+      final box = clampToSpain(LatLngBounds(const LatLng(20.1, -40.1), const LatLng(48.2, 25.3)))!;
+      expect(box.east - box.west, lessThanOrEqualTo(40));
+      expect(box.north - box.south, lessThanOrEqualTo(30));
+      expect(box.contains(const LatLng(28.46, -16.25)), isTrue); // Tenerife
+      expect(box.contains(const LatLng(42.0, 3.2)), isTrue); // Girona
+      // una caja dentro de España no cambia
+      final madrid = LatLngBounds(const LatLng(40.3, -3.8), const LatLng(40.5, -3.6));
+      expect(clampToSpain(madrid)!.south, 40.3);
+      // fuera de España: nada que pedir
+      expect(clampToSpain(LatLngBounds(const LatLng(50, 10), const LatLng(52, 12))), isNull);
+    });
+  });
+
   group('models', () {
     test('MapPoint: punto suelto y grupo', () {
       final p = MapPoint.fromJson({'id': '12', 'lat': 28.4, 'lon': -16.2, 'count': 1, 'price': '1.459'});
