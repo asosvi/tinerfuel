@@ -77,16 +77,16 @@ class Supabase:
         self.key = key or os.environ["SUPABASE_SERVICE_ROLE_KEY"]
 
     def rpc(self, name, payload, timeout=120):
+        headers = {"apikey": self.key, "Content-Type": "application/json", "User-Agent": USER_AGENT}
+        # La service_role antigua es un JWT; la clave nueva (sb_secret_...) no lo
+        # es y basta con 'apikey'.
+        if self.key.startswith("eyJ"):
+            headers["Authorization"] = f"Bearer {self.key}"
         req = urllib.request.Request(
             f"{self.url}/rest/v1/rpc/{name}",
             data=json.dumps(payload).encode(),
             method="POST",
-            headers={
-                "apikey": self.key,
-                "Authorization": f"Bearer {self.key}",
-                "Content-Type": "application/json",
-                "User-Agent": USER_AGENT,
-            },
+            headers=headers,
         )
         try:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
