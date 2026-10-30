@@ -527,7 +527,7 @@ abstract class AppLocalizations {
   /// No description provided for @codeSent.
   ///
   /// In es, this message translates to:
-  /// **'Te hemos enviado un código a {email}.'**
+  /// **'Te hemos enviado un correo a {email}. Pulsa el enlace o escribe aquí el código.'**
   String codeSent(String email);
 
   /// No description provided for @code.

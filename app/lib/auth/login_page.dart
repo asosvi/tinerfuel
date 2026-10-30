@@ -80,7 +80,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       showMessage(context, l.invalidEmail, error: true);
       return;
     }
-    await _auth.signInWithOtp(email: _email.text.trim(), shouldCreateUser: true);
+    // El correo trae un código si la plantilla lleva {{ .Token }} (hace falta
+    // SMTP propio para editarla) y si no, un enlace que vuelve aquí: en la web
+    // a esta misma página y en el móvil a la app (authRedirectUrl).
+    await _auth.signInWithOtp(
+      email: _email.text.trim(),
+      shouldCreateUser: true,
+      emailRedirectTo: kIsWeb ? Uri.base.origin : authRedirectUrl,
+    );
     setState(() => _codeSent = true);
     if (mounted) showMessage(context, l.codeSent(_email.text.trim()));
   });

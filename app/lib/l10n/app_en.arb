@@ -71,7 +71,7 @@
   "account": "Account",
   "email": "Email",
   "sendCode": "Send code",
-  "codeSent": "We've sent a code to {email}.",
+  "codeSent": "We've sent an email to {email}. Tap the link or enter the code here.",
   "code": "Code",
   "verify": "Sign in",
   "invalidEmail": "Enter a valid email address (for example, name@example.com).",
