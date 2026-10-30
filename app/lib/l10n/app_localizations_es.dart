@@ -241,7 +241,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String codeSent(String email) {
-    return 'Te hemos enviado un correo a $email. Pulsa el enlace o escribe aquí el código.';
+    return 'Te hemos enviado un código a $email.';
   }
 
   @override

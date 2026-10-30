@@ -78,7 +78,7 @@
   "account": "Cuenta",
   "email": "Email",
   "sendCode": "Enviar código",
-  "codeSent": "Te hemos enviado un correo a {email}. Pulsa el enlace o escribe aquí el código.",
+  "codeSent": "Te hemos enviado un código a {email}.",
   "@codeSent": {"placeholders": {"email": {"type": "String"}}},
   "code": "Código",
   "verify": "Entrar",
